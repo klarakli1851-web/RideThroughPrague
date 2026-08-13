@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="school-types.css" />
+    <link rel="stylesheet" href="booking.css" />
   </head>
   <body>
     <div class="noise"></div>
@@ -66,6 +67,12 @@
         <button class="back-button" data-restart>← <span>Retake quiz</span></button>
         <div class="result-head"><p class="eyebrow"><span></span> your route is ready</p><h2>Your Perfect <em>Match!</em></h2><p id="result-copy"></p><div class="school-match" id="school-match"></div></div>
         <div class="pricing-grid" id="pricing-grid"></div>
+      </section>
+
+      <section class="booking screen" id="booking" aria-live="polite">
+        <button class="back-button" data-back-to-results>← <span>Back to courses</span></button>
+        <div class="booking-head"><p class="eyebrow"><span></span> one last step</p><h2>Book your first<br /><em>drive.</em></h2><p id="booking-course"></p></div>
+        <div class="booking-layout"><div class="calendar-card"><div class="calendar-title"><span>CHOOSE A DAY</span><b id="calendar-month"></b></div><div class="calendar-days" id="calendar-days"></div></div><div class="slots-card"><div class="calendar-title"><span>AVAILABLE RIDES</span><b id="selected-date"></b></div><div class="ride-slots" id="ride-slots"></div><button class="primary-button confirm-booking" id="confirm-booking" disabled>Confirm booking <span>→</span></button></div></div>
       </section>
     </main>
 
