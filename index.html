@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Find the driving course that fits your life in Prague." />
+    <title>DrivingTroughPrague — Find Your Course</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="DrivingTroughPrague home">DRIVING<span>•</span>THROUGH<br />PRAGUE</a>
+      <nav aria-label="Main navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#courses">Courses</a>
+      </nav>
+      <button class="nav-cta" data-start-quiz>Find my course <span>↗</span></button>
+    </header>
+
+    <main>
+      <section id="home" class="hero screen active" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Prague’s next-gen driving school</p>
+          <h1 id="hero-title">Not sure which<br />driving course <em>fits you?</em></h1>
+          <p class="intro">Take our 30-second quiz to find your perfect match. No awkward sales call. Just your route to the road.</p>
+          <button class="primary-button" data-start-quiz>Find My Course <span>→</span></button>
+          <p class="social-proof"><strong>2,000+</strong> students passed last year <i>★</i> 4.9 average rating</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orb orb-one"></div><div class="orb orb-two"></div>
+          <div class="road-card"><div class="road-line"></div><div class="road-line"></div><div class="road-line"></div></div>
+          <div class="license-card"><small>YOUR LICENSE<br />STARTS HERE</small><b>GO</b><span>PRG / 2026</span></div>
+          <div class="route-pill">● YOUR ROUTE, YOUR PACE</div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="how-it-works">
+        <p class="eyebrow"><span></span> zero decision fatigue</p>
+        <h2>Three taps to your<br /><em>best route.</em></h2>
+        <div class="steps"><article><b>01</b><h3>Tell us your pace</h3><p>Choose the schedule that actually works with your life.</p></article><article><b>02</b><h3>Choose your vibe</h3><p>Keep it simple or unlock more time behind the wheel.</p></article><article><b>03</b><h3>Meet your match</h3><p>Get a course recommendation made for your answers.</p></article></div>
+      </section>
+
+      <section id="courses" class="course-peek"><p class="eyebrow"><span></span> choose with confidence</p><h2>Built for every kind<br />of <em>new driver.</em></h2><button class="text-button" data-start-quiz>Match me to a course →</button></section>
+
+      <section class="quiz-shell screen" id="quiz" aria-live="polite">
+        <button class="back-button" data-back aria-label="Back">← <span>Back</span></button>
+        <div class="quiz-card">
+          <div class="quiz-top"><span id="step-label">Step 1 of 2</span><span id="step-percent">50%</span></div>
+          <div class="progress"><i id="progress-fill"></i></div>
+          <div id="question-content"></div>
+        </div>
+      </section>
+
+      <section class="result screen" id="result" aria-live="polite">
+        <button class="back-button" data-restart>← <span>Retake quiz</span></button>
+        <div class="result-head"><p class="eyebrow"><span></span> your route is ready</p><h2>Your Perfect <em>Match!</em></h2><p id="result-copy"></p></div>
+        <div class="pricing-grid" id="pricing-grid"></div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status">You’re on the list — we’ll be in touch!</div>
+    <footer>© 2026 DrivingTroughPrague <span>READY WHEN YOU ARE.</span></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
