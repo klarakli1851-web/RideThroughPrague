@@ -1,4 +1,4 @@
-const state = { step: 1, answers: { priority: null, flexibility: null, extras: null }, courses: [], schoolTypes: [] };
+const state = { step: 1, answers: { priority: null, flexibility: null, extras: null }, courses: [], schoolTypes: [], booking: { course: null, day: null, time: null } };
 const questions = {
   1: { key: 'priority', title: 'What matters most when choosing your driving school?', help: 'There is no wrong answer — this helps us point you in the right direction.', options: [
     { value: 'budget', label: 'Keeping the price as low as possible.', detail: 'I want a smart, straightforward route.', icon: '$' },
@@ -23,5 +23,22 @@ function answer(value) { state.answers[questions[state.step].key] = value; if (s
 function recommendedId() { const { priority, flexibility, extras } = state.answers; if (priority === 'confidence' || extras === 'premium') return 'vip'; if (priority === 'balance' || flexibility === 'flexible') return 'standard'; return 'basic'; }
 function recommendedTypeId(courseId) { return courseId === 'vip' ? 'premium' : courseId === 'standard' ? 'flex' : 'classic'; }
 function renderResults() { const pick = recommendedId(); const selected = state.courses.find(c => c.id === pick); const schoolType = state.schoolTypes.find(type => type.id === recommendedTypeId(pick)); document.getElementById('result-copy').textContent = `${selected.name} is built for your ${state.answers.flexibility === 'flexible' ? 'on-the-go' : 'steady'} schedule. Start when you’re ready.`; document.getElementById('school-match').innerHTML = `<span>YOUR SCHOOL TYPE</span><strong>${schoolType.name}</strong><small>${schoolType.bestFor}</small>`; document.getElementById('pricing-grid').innerHTML = state.courses.map(course => { const match = course.id === pick; const popular = course.id === 'standard'; return `<article class="price-card ${match ? 'recommended' : ''}">${popular ? '<div class="badge">MOST POPULAR</div>' : ''}${match ? '<div class="match-label">YOUR MATCH</div>' : ''}<p class="course-tag">${course.tag}</p><h3>${course.name}</h3><p class="course-description">${course.description}</p><div class="price"><span>${course.price.toLocaleString('cs-CZ')}</span> Kč</div><ul>${course.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul><p class="fit">${course.fit}</p><button class="book-button" data-book="${course.name}">Book Now <span>→</span></button></article>`; }).join(''); document.querySelectorAll('[data-book]').forEach(b => b.addEventListener('click', () => book(b.dataset.book))); showScreen('result'); }
-function book(course) { const toast = document.getElementById('toast'); toast.textContent = `${course} selected — we’ll be in touch!`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3500); }
+function book(course) { state.booking = { course, day: null, time: null }; document.getElementById('booking-course').textContent = `${course} selected. Pick a time for your first ride.`; buildCalendar(); showScreen('booking'); }
+function buildCalendar() {
+  const today = new Date(); const dates = Array.from({ length: 7 }, (_, index) => { const date = new Date(today); date.setDate(today.getDate() + index + 1); return date; });
+  document.getElementById('calendar-month').textContent = today.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  document.getElementById('calendar-days').innerHTML = dates.map((date, index) => `<button class="day-button ${index === 0 ? 'selected' : ''}" data-day="${date.toISOString()}"><small>${date.toLocaleDateString('en-GB', { weekday: 'short' })}</small><strong>${date.getDate()}</strong></button>`).join('');
+  document.querySelectorAll('[data-day]').forEach(button => button.addEventListener('click', () => { document.querySelectorAll('[data-day]').forEach(day => day.classList.remove('selected')); button.classList.add('selected'); state.booking.day = new Date(button.dataset.day); renderSlots(); }));
+  state.booking.day = dates[0]; renderSlots();
+}
+function renderSlots() {
+  const slots = ['09:00', '11:30', '14:00', '16:30', '18:30']; const isWeekend = [0, 6].includes(state.booking.day.getDay());
+  document.getElementById('selected-date').textContent = state.booking.day.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+  document.getElementById('ride-slots').innerHTML = slots.map((time, index) => `<button class="slot-button" data-slot="${time}"><span>${time}</span><small>${isWeekend ? 'Weekend lesson' : index > 2 ? 'After-school ride' : 'Available'}</small></button>`).join('');
+  document.querySelectorAll('[data-slot]').forEach(button => button.addEventListener('click', () => { document.querySelectorAll('[data-slot]').forEach(slot => slot.classList.remove('selected')); button.classList.add('selected'); state.booking.time = button.dataset.slot; const confirm = document.getElementById('confirm-booking'); confirm.disabled = false; confirm.classList.add('ready'); }));
+  const confirm = document.getElementById('confirm-booking'); confirm.disabled = true; confirm.classList.remove('ready');
+}
+function confirmBooking() { const toast = document.getElementById('toast'); toast.textContent = `${state.booking.course} ride reserved for ${state.booking.time} — see you on the road!`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 4000); showScreen('home'); }
 document.querySelectorAll('[data-start-quiz]').forEach(b => b.addEventListener('click', startQuiz)); document.querySelector('[data-back]').addEventListener('click', () => state.step === 1 ? showScreen('home') : (state.step -= 1, renderQuestion())); document.querySelector('[data-restart]').addEventListener('click', startQuiz); loadCourses();
+document.querySelector('[data-back-to-results]').addEventListener('click', () => showScreen('result'));
+document.querySelector('#confirm-booking').addEventListener('click', confirmBooking);
