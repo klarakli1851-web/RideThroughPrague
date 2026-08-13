@@ -1,58 +1,27 @@
-const state = { step: 1, answers: { flexibility: null, extras: null }, courses: [] };
+const state = { step: 1, answers: { priority: null, flexibility: null, extras: null }, courses: [], schoolTypes: [] };
 const questions = {
-  1: { key: 'flexibility', title: 'How much flexibility do you need for your driving lessons?', help: 'Pick the pace that fits your week.', options: [
+  1: { key: 'priority', title: 'What matters most when choosing your driving school?', help: 'There is no wrong answer — this helps us point you in the right direction.', options: [
+    { value: 'budget', label: 'Keeping the price as low as possible.', detail: 'I want a smart, straightforward route.', icon: '$' },
+    { value: 'balance', label: 'Fitting lessons around my life.', detail: 'I need a school that works with my week.', icon: '◷' },
+    { value: 'confidence', label: 'Getting extra confidence on the road.', detail: 'More practice and a premium experience sound good.', icon: '✦' }
+  ]},
+  2: { key: 'flexibility', title: 'How much flexibility do you need for your driving lessons?', help: 'Pick the pace that fits your week.', options: [
     { value: 'fixed', label: 'I have a set schedule', detail: '& want the cheapest option.', icon: '◷' },
     { value: 'flexible', label: 'I need total flexibility', detail: '(weekends, evenings).', icon: '✦' }
   ]},
-  2: { key: 'extras', title: 'Do you want extra practice time or premium cars?', help: 'Your confidence, your call.', options: [
+  3: { key: 'extras', title: 'Do you want extra practice time or premium cars?', help: 'Your confidence, your call.', options: [
     { value: 'simple', label: 'No, just get me my license.', detail: 'Keep it focused and simple.', icon: '→' },
     { value: 'premium', label: 'Yes! Give me extra hours', detail: 'or let me drive premium cars.', icon: '✦' }
   ]}
 };
-
-async function loadCourses() {
-  try { state.courses = await fetch('courses.json').then(r => r.json()); }
-  catch { state.courses = []; }
-}
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function startQuiz() { state.step = 1; state.answers = { flexibility: null, extras: null }; renderQuestion(); showScreen('quiz'); }
-function renderQuestion() {
-  const q = questions[state.step], percent = state.step * 50;
-  document.getElementById('step-label').textContent = `Step ${state.step} of 2`;
-  document.getElementById('step-percent').textContent = `${percent}%`;
-  document.getElementById('progress-fill').style.width = `${percent}%`;
-  document.getElementById('question-content').innerHTML = `<p class="quiz-kicker">MAKE IT YOURS</p><h2>${q.title}</h2><p class="quiz-help">${q.help}</p><div class="options">${q.options.map(o => `<button class="option" data-answer="${o.value}"><span class="option-icon">${o.icon}</span><span><strong>${o.label}</strong><small>${o.detail}</small></span><b>→</b></button>`).join('')}</div>`;
-  document.querySelectorAll('[data-answer]').forEach(b => b.addEventListener('click', () => answer(b.dataset.answer)));
-}
-function answer(value) {
-  state.answers[questions[state.step].key] = value;
-  if (state.step === 1) { state.step = 2; renderQuestion(); }
-  else renderResults();
-}
-function recommendedId() {
-  const { flexibility, extras } = state.answers;
-  if (extras === 'premium') return 'vip';
-  if (flexibility === 'flexible') return 'standard';
-  return 'basic';
-}
-function renderResults() {
-  const pick = recommendedId();
-  const selected = state.courses.find(c => c.id === pick);
-  document.getElementById('result-copy').textContent = `${selected.name} is built for your ${state.answers.flexibility === 'flexible' ? 'on-the-go' : 'steady'} schedule. Start when you’re ready.`;
-  document.getElementById('pricing-grid').innerHTML = state.courses.map(course => {
-    const match = course.id === pick;
-    const popular = course.id === 'standard';
-    return `<article class="price-card ${match ? 'recommended' : ''}">${popular ? '<div class="badge">MOST POPULAR</div>' : ''}${match ? '<div class="match-label">YOUR MATCH</div>' : ''}<p class="course-tag">${course.tag}</p><h3>${course.name}</h3><p class="course-description">${course.description}</p><div class="price"><span>${course.price.toLocaleString('cs-CZ')}</span> Kč</div><ul>${course.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul><p class="fit">${course.fit}</p><button class="book-button" data-book="${course.name}">Book Now <span>→</span></button></article>`;
-  }).join('');
-  document.querySelectorAll('[data-book]').forEach(b => b.addEventListener('click', () => book(b.dataset.book)));
-  showScreen('result');
-}
+async function loadCourses() { try { const data = await fetch('courses.json').then(r => r.json()); state.courses = data.courses; state.schoolTypes = data.schoolTypes; renderSchoolTypes(); } catch { state.courses = []; state.schoolTypes = []; } }
+function renderSchoolTypes() { document.getElementById('type-grid').innerHTML = state.schoolTypes.map(type => `<article class="type-card"><span>${type.number}</span><p>${type.tag}</p><h3>${type.name}</h3><div class="type-line"></div><p class="type-description">${type.description}</p><small>${type.bestFor}</small><button data-start-quiz>Find my fit →</button></article>`).join(''); document.querySelectorAll('[data-start-quiz]').forEach(button => button.addEventListener('click', startQuiz)); }
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function startQuiz() { state.step = 1; state.answers = { priority: null, flexibility: null, extras: null }; renderQuestion(); showScreen('quiz'); }
+function renderQuestion() { const q = questions[state.step], percent = Math.round(state.step / 3 * 100); document.getElementById('step-label').textContent = `Step ${state.step} of 3`; document.getElementById('step-percent').textContent = `${percent}%`; document.getElementById('progress-fill').style.width = `${percent}%`; document.getElementById('question-content').innerHTML = `<p class="quiz-kicker">MAKE IT YOURS</p><h2>${q.title}</h2><p class="quiz-help">${q.help}</p><div class="options">${q.options.map(o => `<button class="option" data-answer="${o.value}"><span class="option-icon">${o.icon}</span><span><strong>${o.label}</strong><small>${o.detail}</small></span><b>→</b></button>`).join('')}</div>`; document.querySelectorAll('[data-answer]').forEach(b => b.addEventListener('click', () => answer(b.dataset.answer))); }
+function answer(value) { state.answers[questions[state.step].key] = value; if (state.step < 3) { state.step += 1; renderQuestion(); } else renderResults(); }
+function recommendedId() { const { priority, flexibility, extras } = state.answers; if (priority === 'confidence' || extras === 'premium') return 'vip'; if (priority === 'balance' || flexibility === 'flexible') return 'standard'; return 'basic'; }
+function recommendedTypeId(courseId) { return courseId === 'vip' ? 'premium' : courseId === 'standard' ? 'flex' : 'classic'; }
+function renderResults() { const pick = recommendedId(); const selected = state.courses.find(c => c.id === pick); const schoolType = state.schoolTypes.find(type => type.id === recommendedTypeId(pick)); document.getElementById('result-copy').textContent = `${selected.name} is built for your ${state.answers.flexibility === 'flexible' ? 'on-the-go' : 'steady'} schedule. Start when you’re ready.`; document.getElementById('school-match').innerHTML = `<span>YOUR SCHOOL TYPE</span><strong>${schoolType.name}</strong><small>${schoolType.bestFor}</small>`; document.getElementById('pricing-grid').innerHTML = state.courses.map(course => { const match = course.id === pick; const popular = course.id === 'standard'; return `<article class="price-card ${match ? 'recommended' : ''}">${popular ? '<div class="badge">MOST POPULAR</div>' : ''}${match ? '<div class="match-label">YOUR MATCH</div>' : ''}<p class="course-tag">${course.tag}</p><h3>${course.name}</h3><p class="course-description">${course.description}</p><div class="price"><span>${course.price.toLocaleString('cs-CZ')}</span> Kč</div><ul>${course.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul><p class="fit">${course.fit}</p><button class="book-button" data-book="${course.name}">Book Now <span>→</span></button></article>`; }).join(''); document.querySelectorAll('[data-book]').forEach(b => b.addEventListener('click', () => book(b.dataset.book))); showScreen('result'); }
 function book(course) { const toast = document.getElementById('toast'); toast.textContent = `${course} selected — we’ll be in touch!`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3500); }
-document.querySelectorAll('[data-start-quiz]').forEach(b => b.addEventListener('click', startQuiz));
-document.querySelector('[data-back]').addEventListener('click', () => state.step === 1 ? showScreen('home') : (state.step = 1, renderQuestion()));
-document.querySelector('[data-restart]').addEventListener('click', startQuiz);
-loadCourses();
+document.querySelectorAll('[data-start-quiz]').forEach(b => b.addEventListener('click', startQuiz)); document.querySelector('[data-back]').addEventListener('click', () => state.step === 1 ? showScreen('home') : (state.step -= 1, renderQuestion())); document.querySelector('[data-restart]').addEventListener('click', startQuiz); loadCourses();
