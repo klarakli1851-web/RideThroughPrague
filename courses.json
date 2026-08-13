@@ -1,0 +1,5 @@
+[
+  {"id":"basic","name":"Basic Course","price":20000,"tag":"GET ON THE ROAD","description":"The no-fuss path to your licence.","features":["20 driving hours","Fixed weekday schedule","Standard training car"],"fit":"Best for students with a set weekly rhythm."},
+  {"id":"standard","name":"Standard Course","price":25000,"tag":"MOST POPULAR","description":"More room to learn, on a timetable that bends.","features":["25 driving hours","Evenings & weekend slots","Priority booking","Standard training car"],"fit":"The sweet spot for a busy student life."},
+  {"id":"vip","name":"VIP Course","price":35000,"tag":"FULL THROTTLE","description":"Extra wheel time, premium ride, zero compromises.","features":["35 driving hours","Total schedule flexibility","Premium training cars","Priority instructor access"],"fit":"For drivers who want the full experience."}
+]
